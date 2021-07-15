@@ -1,3 +1,5 @@
+import fileToUrl from 'file-url'
+
 // adapted from https://nodejs.org/api/path.html#path_path_resolve_paths
 const CHAR_FORWARD_SLASH = '/'
 const percentRegEx = /%/g
@@ -24,5 +26,8 @@ export default (filepath, cwd) => {
   if (resolved.includes('\r')) { resolved = resolved.replace(carriageReturnRegEx, '%0D') }
   if (resolved.includes('\t')) { resolved = resolved.replace(tabRegEx, '%09') }
   outURL.pathname = resolved
+
+  console.log('__resolved__', resolved)
+  console.log('__what__', fileToUrl(resolved))
   return outURL
 }

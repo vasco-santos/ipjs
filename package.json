@@ -33,11 +33,12 @@
     "tempy": "^1.0.0"
   },
   "dependencies": {
-    "acorn": "^8.0.5",
     "@tgrajewski/rmtree": "^1.0.1",
+    "acorn": "^8.0.5",
+    "escodegen": "^2.0.0",
     "esm-ast-to-cjs": "^0.0.2",
-    "rollup-plugin-preserve-shebangs": "^0.2.0",
+    "file-url": "^4.0.0",
     "rollup": "^2.38.1",
-    "escodegen": "^2.0.0"
+    "rollup-plugin-preserve-shebangs": "^0.2.0"
   }
 }
