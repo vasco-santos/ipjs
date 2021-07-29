@@ -40,7 +40,9 @@ class Package {
     console.log('__IPJS__1.1')
     if (this.parsed) throw new Error('Already parsed/parsing')
     console.log('__IPJS__1.2')
-    const toURL = s => path(s, this.cwd)
+    const toURL = s => {
+      return path(s, this.cwd)
+    }
     console.log('__IPJS__1.3')
     const json = JSON.parse((await readFile(toURL('package.json'))).toString())
     console.log('__IPJS__1.4')
