@@ -18,11 +18,14 @@ const run = async opts => {
       onDeflateEnd: print('deflated')
     }
   }
+  console.log('_IPJS_1')
   const pkg = await packager(opts)
   await pkg.parsed
   const dist = opts.dist || resolve('dist')
+  console.log('_IPJS_2')
   await pkg.deflate(dist)
   pkg.dist = dist
+  console.log('_IPJS_3')
   return pkg
 }
 run.schema = {

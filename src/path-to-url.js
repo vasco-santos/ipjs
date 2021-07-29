@@ -1,4 +1,4 @@
-import fileToUrl from 'file-url'
+// import fileToUrl from 'file-url'
 
 // adapted from https://nodejs.org/api/path.html#path_path_resolve_paths
 const CHAR_FORWARD_SLASH = '/'
@@ -28,6 +28,6 @@ export default (filepath, cwd) => {
   outURL.pathname = resolved
 
   console.log('__resolved__', resolved)
-  console.log('__what__', fileToUrl(resolved))
+  // console.log('__what__', fileToUrl(resolved))
   return outURL
 }
