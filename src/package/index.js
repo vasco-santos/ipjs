@@ -8,6 +8,8 @@ import { join, dirname, resolve, relative } from 'path'
 import rmtree from '@tgrajewski/rmtree'
 import preserveShebangs from 'rollup-plugin-preserve-shebangs'
 
+// import fileUrl from 'file-url'
+
 const docFileRegex = /^(readme|license)/i
 
 const copy = o => JSON.parse(JSON.stringify(o))
@@ -37,27 +39,20 @@ class Package {
   }
 
   async parse () {
-    console.log('__IPJS__1.1')
     if (this.parsed) throw new Error('Already parsed/parsing')
-    console.log('__IPJS__1.2')
     const toURL = s => {
       return path(s, this.cwd)
     }
-    console.log('__IPJS__1.3')
     const json = JSON.parse((await readFile(toURL('package.json'))).toString())
-    console.log('__IPJS__1.4')
     this.pkgjson = json
 
     if (json.type !== 'module') throw new Error('Unsupported: package.json must have "type: module"')
-
-    console.log('__IPJS__1.5')
     if (json.imports) {
       this.importMap = new Map()
       for (const [key, value] of Object.entries(json.imports)) {
         this.importMap.set(key, this.file(toURL(value)))
       }
     }
-    console.log('__IPJS__1.6')
     this.namedImports = new Set()
 
     const exports = {}
@@ -80,7 +75,6 @@ class Package {
         }
       }
     }
-    console.log('__IPJS__1.7')
     this.exports = exports
     let promises = [...this.files.values()]
     this.docFiles = new Map((await this.getDocFiles()).map(f => [f, toURL(f)]))
@@ -90,7 +84,6 @@ class Package {
       promises = [...promises, ...this.testFiles.values()]
     }
     await Promise.all(promises)
-    console.log('__IPJS__1.8')
     return this
   }
 
@@ -154,8 +147,10 @@ class Package {
         paths.push(...['./browser-', './node-'].map(n => n + rel.slice(2)))
       }
     }
+    console.log('__IPJS__4.1.1', paths)
     const code = paths.map(p => `import("${p}")`).join('\n')
     const input = new URL(dist + '/esm/_ipjsInput.js')
+    console.log('__IPJS__4.1.2', input, code)
     await writeFile(input, code)
     const onwarn = warning => {
       const skips = ['PREFER_NAMED_EXPORTS']
@@ -166,7 +161,10 @@ class Package {
       }
     }
 
+    console.log('__IPJS__4.1.3', fileURLToPath(input))
+
     const compile = await rollup({ input: fileURLToPath(input), treeshake: false, onwarn, plugins })
+    console.log('__IPJS__4.1.4')
     const dir = fileURLToPath(new URL(dist + '/cjs'))
     await compile.write({ preserveModules: true, dir, format: 'cjs' })
     await unlink(input)
@@ -219,21 +217,25 @@ class Package {
   async deflate (dist) {
     if (!(dist instanceof URL)) dist = path(dist)
     rmtree(fileURLToPath(dist))
+    console.log('__IPJS__4.1', new URL(dist + '/cjs').toString())
     await mkdir(new URL(dist + '/cjs'), { recursive: true })
     await mkdir(new URL(dist + '/esm'))
 
     const pending = [...this.files.values()].map(p => p.then(f => f.deflate(dist)))
     for (const [f, url] of this.docFiles) {
+      console.log('copy', url, `${dist}/${f}`)
       pending.push(copyFile(url, new URL(`${dist}/${f}`)))
     }
     if (this.includeTests) {
       pending.push(...[...this.testFiles.values()].map(p => p.then(f => f.deflate(dist))))
     }
     await Promise.all(pending)
+    console.log('__IPJS__4.1(2)')
     await this.deflateCJS(dist)
 
     const json = copy(this.pkgjson)
 
+    console.log('__IPJS__4.2')
     delete json.type
     if (this.includeMain) {
       json.main = `./${join('./cjs', json.main || './index.js')}`
@@ -259,10 +261,13 @@ class Package {
         esmBrowser[_import] = _browser
       }
     }
+    console.log('__IPJS__4.3')
     if (json.exports.import) {
       json.exports = json.exports.import
       json.browser = json.browser.import
     }
+
+    console.log('__IPJS__4.4')
     await this.stubFiles(dist, json.browser)
     let files = Promise.all(pending)
     pending.push(writeFile(new URL(dist + '/package.json'), JSON.stringify(json, null, 2)))

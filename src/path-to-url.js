@@ -10,10 +10,14 @@ const CHAR_FORWARD_SLASH = '/'
 // const tabRegEx = /\t/g
 
 export default (filepath, cwd) => {
+  console.log('__IPJS__1.1.0', filepath, cwd)
   let resolved
   if (filepath.startsWith('./')) filepath = filepath.slice(2)
   if (filepath.startsWith('/')) resolved = filepath
-  else resolved = (cwd || '') + path.sep + filepath
+  else {
+    resolved = (cwd || '') + (cwd ? path.sep : '') + filepath
+  }
+  console.log('__IPJS__1.1.1', resolved)
   console.log('__IPJS__1.1.1', resolved)
 
   // path.resolve strips trailing slashes so we must add them back
