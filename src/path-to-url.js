@@ -8,6 +8,7 @@ const tabRegEx = /\t/g
 
 export default (filepath, cwd) => {
   let resolved
+  console.log('__IPJS__1.1.1')
   if (filepath.startsWith('./')) filepath = filepath.slice(2)
   if (filepath.startsWith('/')) resolved = filepath
   else resolved = (cwd || '') + '/' + filepath
@@ -16,6 +17,7 @@ export default (filepath, cwd) => {
   const filePathLast = filepath.charCodeAt(filepath.length - 1)
   if ((filePathLast === CHAR_FORWARD_SLASH) &&
       resolved[resolved.length - 1] !== '/') { resolved += '/' }
+  console.log('__IPJS__1.1.2')
   const outURL = new URL('file://')
   if (resolved.includes('%')) { resolved = resolved.replace(percentRegEx, '%25') }
   // In posix, "/" is a valid character in paths
@@ -24,5 +26,6 @@ export default (filepath, cwd) => {
   if (resolved.includes('\r')) { resolved = resolved.replace(carriageReturnRegEx, '%0D') }
   if (resolved.includes('\t')) { resolved = resolved.replace(tabRegEx, '%09') }
   outURL.pathname = resolved
+  console.log('__IPJS__1.1.3', outURL, resolved)
   return outURL
 }

@@ -37,19 +37,25 @@ class Package {
   }
 
   async parse () {
+    console.log('__IPJS__1.1')
     if (this.parsed) throw new Error('Already parsed/parsing')
+    console.log('__IPJS__1.2')
     const toURL = s => path(s, this.cwd)
+    console.log('__IPJS__1.3')
     const json = JSON.parse((await readFile(toURL('package.json'))).toString())
+    console.log('__IPJS__1.4')
     this.pkgjson = json
 
     if (json.type !== 'module') throw new Error('Unsupported: package.json must have "type: module"')
 
+    console.log('__IPJS__1.5')
     if (json.imports) {
       this.importMap = new Map()
       for (const [key, value] of Object.entries(json.imports)) {
         this.importMap.set(key, this.file(toURL(value)))
       }
     }
+    console.log('__IPJS__1.6')
     this.namedImports = new Set()
 
     const exports = {}
@@ -72,6 +78,7 @@ class Package {
         }
       }
     }
+    console.log('__IPJS__1.7')
     this.exports = exports
     let promises = [...this.files.values()]
     this.docFiles = new Map((await this.getDocFiles()).map(f => [f, toURL(f)]))
@@ -81,6 +88,7 @@ class Package {
       promises = [...promises, ...this.testFiles.values()]
     }
     await Promise.all(promises)
+    console.log('__IPJS__1.8')
     return this
   }
 
